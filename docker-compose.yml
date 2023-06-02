@@ -1,15 +1,19 @@
 version: "3"
-
 services:
-  chrome:
-    build: .
-    restart: unless-stopped
+  selenium:
+    image: selenium/standalone-chrome:4.1.4-20220427
     ports:
       - 4444:4444
-      - 15900:5900
+      - 7900:7900
     volumes:
       - /dev/shm:/dev/shm
-      - /etc/localtime:/etc/localtime:ro
+  app:
+    build: .
+    ports:
+      - 8888:8888
+    volumes:
+      - .:/app
     environment:
-      - SCREEN_WIDTH=1600
-      - SCREEN_HEIGHT=900
+      SELENIUM_URL: http://selenium:4444/wd/hub
+    command: jupyter-notebook --port=8888 --ip=0.0.0.0 --allow-root --NotebookApp.token=''
+    tty: true

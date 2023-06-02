@@ -1,17 +1,12 @@
-FROM selenium/standalone-chrome-debug:3
+FROM python:3.8.10
 
-USER root
-RUN apt-get update \
- && apt-get install -y -q --no-install-recommends \
-    fonts-noto-cjk fonts-noto-cjk-extra language-selector-common language-pack-ja \
- && update-locale LANG=ja_JP.UTF-8 \
- && apt-get clean \
- && rm -r /var/lib/apt/lists/*
+ENV PYTHONIOENCODING utf-8
+ENV TZ="Asia/Tokyo"
+ENV LANG=C.UTF-8
+ENV LANGUAGE=en_US:en_US
 
-ENV LANG ja_JP.UTF-8
-ENV LANGUAGE ja_JP:ja
-ENV LC_ALL ja_JP.UTF-8
+WORKDIR /app
 
-USER 1200
+COPY ./requirements.txt /tmp/requirements.txt
 
-RUN x11vnc -storepasswd uRkenG@24 ${HOME}/.vnc/passwd
+RUN pip install -r /tmp/requirements.txt
