@@ -2,13 +2,14 @@ from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import Select
+from selenium.webdriver import ActionChains
 import time
 
 
 class GymReserve():
-    def setup_method(self, service):
+    def setup_method(self, service, vers):
         self.driver = webdriver.Chrome(service=service)
-        self.vers = {}
+        self.vers = vers
         
     def teardown_method(self):
         self.driver.quit()
@@ -44,23 +45,39 @@ class GymReserve():
             i = input("どの時間帯を予約しますか：")
             print("{}の時間帯ですね、予約します".format(choices[int(i)-1].text.split(" ")[0]))
             choices[int(i)-1].click()
-            self.driver.find_element(By.CLASS_NAME, 'btn-primary').click()
+            
+            self.driver.find_element(By.XPATH, '//div[@class="modal-footer"]/input').click()
+
+            self.driver.find_element(By.NAME, 'name').send_keys(self.vers["name"])
+            self.driver.find_element(By.ID, 'rsvpif_email_id').send_keys(self.vers["email"])
+            self.driver.find_element(By.ID, 'rsvpif_email_conf_id').send_keys(self.vers["email"])
+            self.driver.find_element(By.NAME, 'other').send_keys(self.vers["no"])
+            self.driver.find_element(By.NAME, 'other2').send_keys(self.vers["major"])
+            self.driver.find_element(By.NAME, 'ans[186619]').send_keys(self.vers["major"])
+            
+            self.driver.find_element(By.NAME, 'do_rsv').click()
+            script = "javascript: cmn.dispLoading();"
+            self.driver.execute_script(script)
+
+
+            self.driver.find_element(By.ID, 'ebtn_id').click()
             print("予約完了しました")
 
 if __name__ == '__main__':
     chrome_driver_path = 'chromedriver.exe'
-
     options = webdriver.ChromeOptions()
     options.add_argument('--headless')
-
     service = Service(chrome_driver_path)
+
+    #自身の情報を書き込む
+    vers = {"name":"堂丸健吾", "email":"is0514se@ed.ritsumei.ac.jp", "no":"23530", "major":"情報理工学専攻"}
     
     reserve = GymReserve()
-    reserve.setup_method(service)
-    inp = input("何曜日の予約をしますか？：")
+    reserve.setup_method(service, vers)
+    inp = input("何日の予約をしますか？：")
     reserve.test_gymreserve(inp)
     
-    time.sleep(2)
+    time.sleep(5)
     reserve.teardown_method()
     
     
