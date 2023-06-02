@@ -70,7 +70,7 @@ if __name__ == '__main__':
     service = Service(chrome_driver_path)
 
     #自身の情報を書き込む
-    vers = {"name":"", "email":"", "no":"", "major":""}
+    vers = {"name":"a", "email":"b", "no":"c", "major":"d"}
     
     reserve = GymReserve()
     reserve.setup_method(service, vers)
